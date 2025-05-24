@@ -23,7 +23,6 @@ app.get('/ping',(req,res)=>{
     res.send('PONG');
 })
 
-
 app.use(bodyParser.json());
 app.use(cors());
 app.use('/auth',AuthRouter);
