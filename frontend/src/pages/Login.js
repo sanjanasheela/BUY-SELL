@@ -74,6 +74,28 @@ function Login() {
                 localStorage.setItem('token', jwtToken);
                 localStorage.setItem('loggedInUser', name);
                 console.log("storedtoke",jwtToken)
+                console.log(email);
+                const userInfoUrl = `http://localhost:8080/auth/user/${email}`;
+                const userResponse = await fetch(userInfoUrl, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${jwtToken}` // assuming your API uses Bearer token for auth
+                    }
+                });
+                const userResult = await userResponse.json();
+                console.log("User info response:", userResult);
+    
+                if (userResult.success) {
+                    // Store user info (without password) in localStorage
+                    localStorage.setItem('userProfile', JSON.stringify(userResult.user));
+                } else {
+                    // Optional: handle failure to get user info gracefully
+                    console.warn("Failed to fetch user info:", userResult.message);
+                }
+    
+    
+                // from here give a get req to get the last name and stuff
                 navigate('/home');
             } else {
                 const details = error?.details?.[0]?.message || message || "Login failed";

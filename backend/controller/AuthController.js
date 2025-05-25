@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { firstname, lastname, email,age,contactnumber, password } = req.body;
     const user = await UserModel.findOne({ email });
     if (user) {
       return res
@@ -14,7 +14,7 @@ const signup = async (req, res) => {
           success: false,
         });
     }
-    const usermodel = new UserModel({ name, email, password });
+    const usermodel = new UserModel({ firstname,lastname, email,age,contactnumber, password });
     usermodel.password = await bcrypt.hash(password, 10);
     await usermodel.save();
     res.status(201).json({ message: "signup successful", success: true });
@@ -69,8 +69,28 @@ const login = async (req, res) => {
     });
   }
 };
+const verify= async (req, res) => {
+  console.log("inside the verify thing")
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ valid: false, message: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.json({ valid: true, user: decoded });
+  } catch (err) {
+    res.status(401).json({ valid: false, message: 'Invalid token' });
+  }
+};
+
+
 
 module.exports = {
   signup,
   login,
+  verify,
 };

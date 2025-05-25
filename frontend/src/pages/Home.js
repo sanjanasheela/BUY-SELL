@@ -1,63 +1,132 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import Navbar from '../navbar';
 import { handleError, handleSuccess } from '../utils';
-import { ToastContainer } from 'react-toastify';
 
-function Home() {
-    // console.log("inside home now ")
-    const [loggedInUser, setLoggedInUser] = useState('');
-    const [products, setProducts] = useState('');
-    const navigate = useNavigate();
-    useEffect(() => {
-        setLoggedInUser(localStorage.getItem('loggedInUser'))
-    }, [])
+function Profile() {
+  const [user, setUser] = useState({
+    firstname: '',
+    lastname: '',
+    email: '',
+    age: '',
+    contactnumber: '',
+  });
 
-    const handleLogout = (e) => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('loggedInUser');
-        handleSuccess('User Loggedout');
-        setTimeout(() => {
-            navigate('/login');
-        }, 1000)
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Load userProfile from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userProfile');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error('Failed to parse userProfile from localStorage', err);
+      }
     }
+  }, []);
 
-    const fetchProducts = async () => {
-        try {
-            const url = "https://deploy-mern-app-1-api.vercel.app/products";
-            const headers = {
-                headers: {
-                    'Authorization': localStorage.getItem('token')
-                }
-            }
-            const response = await fetch(url, headers);
-            const result = await response.json();
-            console.log(result);
-            setProducts(result);
-        } catch (err) {
-            handleError(err);
-        }
+  // Handle input changes
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem('userProfile', JSON.stringify(user));
+      handleSuccess('Profile updated successfully');
+      setIsEditing(false);
+      // TODO: Optionally send updated user data to backend via API call to save changes permanently
+    } catch (error) {
+      handleError('Failed to update profile');
     }
-    useEffect(() => {
-        fetchProducts()
-    }, [])
+  };
 
-    return (
-        <div>
+  return (
+    <div>
+      <Navbar />
+      <h2>Profile</h2>
 
-            <h1>Welcome {loggedInUser}</h1>
-            <button onClick={handleLogout}>Logout</button>
-            <div>
-                {
-                    products && products?.map((item, index) => (
-                        <ul key={index}>
-                            <span>{item.name} : {item.price}</span>
-                        </ul>
-                    ))
-                }
-            </div>
-            {/* <ToastContainer /> */}
-        </div>
-    )
+      <div>
+        <label>First Name: </label>
+        {isEditing ? (
+          <input
+            name="firstname"
+            value={user.firstname}
+            onChange={handleChange}
+          />
+        ) : (
+          <span>{user.firstname}</span>
+        )}
+      </div>
+
+      <div>
+        <label>Last Name: </label>
+        {isEditing ? (
+          <input
+            name="lastname"
+            value={user.lastname}
+            onChange={handleChange}
+          />
+        ) : (
+          <span>{user.lastname}</span>
+        )}
+      </div>
+
+      <div>
+        <label>Email: </label>
+        {isEditing ? (
+          <input
+            name="email"
+            value={user.email}
+            onChange={handleChange}
+            type="email"
+          />
+        ) : (
+          <span>{user.email}</span>
+        )}
+      </div>
+
+      <div>
+        <label>Age: </label>
+        {isEditing ? (
+          <input
+            name="age"
+            value={user.age}
+            onChange={handleChange}
+            type="number"
+            min="0"
+          />
+        ) : (
+          <span>{user.age}</span>
+        )}
+      </div>
+
+      <div>
+        <label>Contact Number: </label>
+        {isEditing ? (
+          <input
+            name="contactnumber"
+            value={user.contactnumber}
+            onChange={handleChange}
+            type="tel"
+          />
+        ) : (
+          <span>{user.contactnumber}</span>
+        )}
+      </div>
+
+      <div style={{ marginTop: '1rem' }}>
+        {isEditing ? (
+          <>
+            <button onClick={handleSave}>Save</button>
+            <button onClick={() => setIsEditing(false)}>Cancel</button>
+          </>
+        ) : (
+          <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+        )}
+      </div>
+    </div>
+  );
 }
 
-export default Home
+export default Profile;

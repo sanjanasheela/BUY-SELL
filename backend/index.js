@@ -13,8 +13,11 @@ app.post('/api/signup', (req, res) => {
 const cors = require('cors');
 
 const bodyParser = require('body-parser');
-const AuthRouter = require('./routes/AuthRouter')
-const productRouter = require('./routes/productRouter')
+const AuthRouter = require('./routes/AuthRouter');
+const productRouter = require('./routes/productRouter');
+const sellRouter = require('./routes/sellRouter');
+const orderHisRouter = require('./routes/orderHisRouter');
+const cartRouter = require('./routes/cartRouter')
 require('dotenv').config();
 require('./models/db');
 const PORT = process.env.PORT || 8080;
@@ -27,7 +30,9 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/auth',AuthRouter);
 app.use('/products',productRouter);
-
+app.use('/sell',sellRouter);
+app.use('/orderhis',orderHisRouter);
+app.use('/cart',cartRouter);
 app.listen(PORT,()=>{
     console.log('server is running on', PORT);
 
