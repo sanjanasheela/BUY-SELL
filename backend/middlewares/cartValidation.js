@@ -8,6 +8,11 @@ function validateCartData(data) {
   } else if (!mongoose.Types.ObjectId.isValid(data.userId)) {
     errors.push('User ID is not valid.');
   }
+  if (!data.sellerId) {
+    errors.push('User ID is required.');
+  } else if (!mongoose.Types.ObjectId.isValid(data.userId)) {
+    errors.push('User ID is not valid.');
+  }
 
   if (!data.itemId) {
     errors.push('Item ID is required.');

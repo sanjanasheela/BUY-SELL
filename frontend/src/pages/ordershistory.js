@@ -1,104 +1,124 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '../navbar';
-// import './OrdersHistory.css';
+import React, { useEffect, useState } from "react";
+import Navbar from "../navbar";
 
-function OrdersHistory() {
-  const [activeTab, setActiveTab] = useState('pending');
-  const [pendingOrders, setPendingOrders] = useState([]);
-  const [boughtItems, setBoughtItems] = useState([]);
-  const [soldItems, setSoldItems] = useState([]);
+function BuyerOrders() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const userId = JSON.parse(localStorage.getItem('userProfile'))._id;
+  const userId = JSON.parse(localStorage.getItem("userProfile"))?._id;
 
   useEffect(() => {
+    if (!userId) {
+      setError("User ID not found");
+      setLoading(false);
+      return;
+    }
+
     const fetchOrders = async () => {
       try {
-        const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+        const baseUrl = "http://localhost:8080/orderhis";
 
-        const [pendingRes, boughtRes, soldRes] = await Promise.all([
-          fetch(`${baseUrl}/orders/pending/${userId}`),
-          fetch(`${baseUrl}/orders/bought/${userId}`),
-          fetch(`${baseUrl}/orders/sold/${userId}`)
-        ]);
+        // Fetch Buy Orders
+        const buyRes = await fetch(`${baseUrl}/${userId}`);
+        const buyText = await buyRes.text();
+        let buyOrders = [];
+        try {
+          const buyData = JSON.parse(buyText);
+          buyOrders = (buyData.orders || []).map(order => ({ ...order, orderType: "Buy" }));
+        } catch {
+          throw new Error("Failed to parse buyer orders");
+        }
 
-        const [pendingData, boughtData, soldData] = await Promise.all([
-          pendingRes.json(),
-          boughtRes.json(),
-          soldRes.json()
-        ]);
+        // Fetch Sell Orders
+        const sellRes = await fetch(`${baseUrl}/seller/${userId}`);
+        const sellText = await sellRes.text();
+        let sellOrders = [];
+        try {
+          const sellData = JSON.parse(sellText);
+          sellOrders = (sellData.orders || []).map(order => ({ ...order, orderType: "Sell" }));
+        } catch {
+          throw new Error("Failed to parse seller orders");
+        }
 
-        setPendingOrders(pendingData.orders || []);
-        setBoughtItems(boughtData.items || []);
-        setSoldItems(soldData.items || []);
-      } catch (error) {
-        console.error('Error fetching order data:', error);
+        // Merge buy and sell orders
+        const allOrders = [...buyOrders, ...sellOrders];
+
+        if (allOrders.length === 0) {
+          setError("No orders found for you.");
+          setOrders([]);
+        } else {
+          setOrders(allOrders);
+          setError(null);
+        }
+      } catch (err) {
+        setError(err.message);
+        setOrders([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchOrders();
   }, [userId]);
 
-  const renderTabContent = () => {
-    if (activeTab === 'pending') {
-      return (
-        <div className="order-section">
-          {pendingOrders.length === 0 ? <p>No pending orders.</p> :
-            pendingOrders.map(order => (
-              <div key={order._id} className="order-card">
-                <p><strong>Item:</strong> {order.itemName}</p>
-                <p><strong>Seller:</strong> {order.sellerName}</p>
-                <p><strong>Price:</strong> ₹{order.price}</p>
-                <p><strong>OTP:</strong> {order.otp}</p>
-              </div>
-            ))
-          }
-        </div>
-      );
-    } else if (activeTab === 'bought') {
-      return (
-        <div className="order-section">
-          {boughtItems.length === 0 ? <p>No items bought.</p> :
-            boughtItems.map(item => (
-              <div key={item._id} className="order-card">
-                <p><strong>Item:</strong> {item.name}</p>
-                <p><strong>Price:</strong> ₹{item.price}</p>
-                <p><strong>Seller:</strong> {item.sellerName}</p>
-              </div>
-            ))
-          }
-        </div>
-      );
-    } else if (activeTab === 'sold') {
-      return (
-        <div className="order-section">
-          {soldItems.length === 0 ? <p>No items sold.</p> :
-            soldItems.map(item => (
-              <div key={item._id} className="order-card">
-                <p><strong>Item:</strong> {item.name}</p>
-                <p><strong>Price:</strong> ₹{item.price}</p>
-                <p><strong>Buyer:</strong> {item.buyerName}</p>
-              </div>
-            ))
-          }
-        </div>
-      );
-    }
-  };
+  if (loading) {
+    return (
+      <div>
+        <Navbar />
+        <p>Loading orders...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <Navbar />
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div>
+        <Navbar />
+        <p>No orders found for you.</p>
+      </div>
+    );
+  }
 
   return (
     <div>
       <Navbar />
-      <h2>Order History</h2>
+      <h2>Your Orders</h2>
+      {orders.map((order) => (
+        <div key={order._id}>
+          <p><strong>Order Type:</strong> {order.orderType}</p>
+          <p><strong>Transaction ID:</strong> {order.transactionId}</p>
+          <p><strong>Seller ID:</strong> {order.sellerId}</p>
+          <p><strong>Status:</strong> {order.status}</p>
+          <p><strong>OTP:</strong> {order.otpHash}</p>
+          <p><strong>Total Amount:</strong> ₹{order.totalAmount}</p>
+          <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
 
-      <div className="tabs">
-        <button onClick={() => setActiveTab('pending')} className={activeTab === 'pending' ? 'active' : ''}>Pending Orders</button>
-        <button onClick={() => setActiveTab('bought')} className={activeTab === 'bought' ? 'active' : ''}>Items Bought</button>
-        <button onClick={() => setActiveTab('sold')} className={activeTab === 'sold' ? 'active' : ''}>Items Sold</button>
-      </div>
-
-      {renderTabContent()}
+          <h4>Items:</h4>
+          {order.items.map((item, idx) => (
+            <div key={idx}>
+              <p><strong>Item Name:</strong> {item.name || "N/A"}</p>
+              <p><strong>Price per Item:</strong> ₹{item.price || "N/A"}</p>
+              <p><strong>Quantity:</strong> {item.quantity || 1}</p>
+              <p>
+                <strong>Subtotal:</strong>{" "}
+                ₹{item.price && item.quantity ? item.price * item.quantity : "N/A"}
+              </p>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
 
-export default OrdersHistory;
+export default BuyerOrders;

@@ -15,51 +15,55 @@ function ItemDetails() {
 
   const handleAddToCart = async () => {
     try {
-      const userProfileString = localStorage.getItem("userProfile"); // get string from localStorage
-      const userProfile = JSON.parse(userProfileString); // parse that string to object
+      const userProfileString = localStorage.getItem("userProfile");
+      const userProfile = JSON.parse(userProfileString);
       const userId = userProfile._id;
-      console.log(userId);
-
-        if (!userId) {
-          alert("User not logged in.");
-          return;
-        }
-
-        if (!item || !item._id) {
-          alert("Item not loaded properly");
-          return;
-        }
-
-        console.log("POST body being sent:", {
-          userId: userId,
-          itemId: item._id,
-          quantity: 1,
-        });
-
-        const response = await fetch("http://localhost:8080/cart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userId, // <-- Just the user ID string
-            itemId: item._id.trim(), // <-- Item ID string
-            quantity: 1,
-          }),
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Failed to add to cart");
-        }
-
-        const data = await response.json();
-        console.log("Cart item saved:", data);
-        setAddedToCart(true);
+      // const sellerId = userProfile.Array_sellerID;
+      if (!userId) {
+        alert("User not logged in.");
+        return;
+      }
+  
+      if (!item || !item._id) {
+        alert("Item not loaded properly");
+        return;
+      }
+  
+      // Prepare POST body to match backend expectation
+      const postBody = {
+        userId: userId,
+        sellerId:item.sellerid,
+        itemId: item._id,
+        name: item.itemname,   // Include item name
+        price: item.price,     // Include item price
+        quantity: 1            // You can change quantity if needed
+      };
+  
+      console.log("POST body being sent:", postBody);
+  
+      const response = await fetch("http://localhost:8080/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postBody),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add to cart");
+      }
+  
+      const data = await response.json();
+      console.log("Cart item saved:", data);
+      setAddedToCart(true);
     } catch (err) {
       console.error("Add to cart error:", err);
       alert("Failed to add item to cart");
     }
   };
+  
+  
 
   if (!item) {
     return (

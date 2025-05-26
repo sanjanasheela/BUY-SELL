@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../navbar';
-// import './DeliverItems.css';
 
 function DeliverItems() {
   const [ordersToDeliver, setOrdersToDeliver] = useState([]);
   const [otpInputs, setOtpInputs] = useState({});
-  const sellerId = JSON.parse(localStorage.getItem('userProfile'))._id;
+  const sellerId = JSON.parse(localStorage.getItem('userProfile'))?._id;
 
   useEffect(() => {
+    if (!sellerId) return;
+
     const fetchDeliverOrders = async () => {
       try {
         const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-        const response = await fetch(`${baseUrl}/orders/toDeliver/${sellerId}`);
+        const response = await fetch(`${baseUrl}/deliver/${sellerId}`);
         const data = await response.json();
+        console.log(data);
         setOrdersToDeliver(data.orders || []);
       } catch (error) {
         console.error('Failed to fetch orders to deliver:', error);
@@ -23,33 +25,66 @@ function DeliverItems() {
   }, [sellerId]);
 
   const handleOtpChange = (orderId, value) => {
-    setOtpInputs({ ...otpInputs, [orderId]: value });
+    setOtpInputs(prev => ({ ...prev, [orderId]: value }));
   };
 
-  const handleDeliver = async (orderId) => {
-    try {
-      const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-      const enteredOtp = otpInputs[orderId];
+  const handleDeliver = async (order) => {
+    const { buyerId, sellerId, transactionId, totalAmount, _id } = order;
+    const otp = otpInputs[_id];
 
-      const response = await fetch(`${baseUrl}/orders/deliver/${orderId}`, {
+    if (!otp) {
+      alert('Please enter the OTP');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/deliver/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ otp: enteredOtp })
+        body: JSON.stringify({
+          buyerId,
+          sellerId,
+          transactionId,
+          totalAmount,
+          otp
+        }),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (response.ok) {
-        alert('Order marked as delivered!');
-        setOrdersToDeliver(ordersToDeliver.filter(order => order._id !== orderId));
-      } else {
-        alert(`Error: ${result.message}`);
+      if (!response.ok) {
+        alert(data.message || 'Failed to complete transaction');
+        return;
       }
-    } catch (err) {
-      alert('An error occurred while delivering the order.');
+
+      alert(data.message); // success message
+
+      // Remove the delivered order from the list
+      setOrdersToDeliver(prevOrders => prevOrders.filter(o => o._id !== _id));
+      
+      // Clear the OTP input for this order
+      setOtpInputs(prev => {
+        const newInputs = { ...prev };
+        delete newInputs[_id];
+        return newInputs;
+      });
+
+    } catch (error) {
+      console.error('Error completing transaction:', error);
+      alert('Something went wrong. Please try again.');
     }
   };
 
+  if (!sellerId) return <p>User not logged in.</p>;
+   if(ordersToDeliver.length===0)
+   {
+   return (
+    <div>
+      <Navbar />
+      <p>Loading item details...</p>
+    </div>
+  );
+}
   return (
     <div>
       <Navbar />
@@ -58,17 +93,32 @@ function DeliverItems() {
         <p>No items to deliver.</p>
       ) : (
         ordersToDeliver.map(order => (
-          <div className="order-card" key={order._id}>
-            <p><strong>Item:</strong> {order.itemName}</p>
-            <p><strong>Price:</strong> ₹{order.price}</p>
-            <p><strong>Buyer:</strong> {order.buyerName}</p>
+          <div key={order._id} className="order-card" style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
+            <p><strong>Transaction ID:</strong> {order.transactionId}</p>
+            <p><strong>Buyer ID:</strong> {order.buyerId}</p>
+            <p><strong>Status:</strong> {order.status}</p>
+            <p><strong>Total Amount:</strong> ₹{order.totalAmount.toFixed(2)}</p>
+            <p><strong>OTP:</strong> {order.otpHash}</p>
+
+            <div>
+              <strong>Items:</strong>
+              <ul>
+                {order.items.map(item => (
+                  <li key={item._id}>
+                    {item.name} - ₹{item.price.toFixed(2)} x {item.quantity || 1}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             <input
               type="text"
               placeholder="Enter OTP"
               value={otpInputs[order._id] || ''}
               onChange={(e) => handleOtpChange(order._id, e.target.value)}
+              style={{ marginRight: '8px' }}
             />
-            <button onClick={() => handleDeliver(order._id)}>Mark as Delivered</button>
+            <button onClick={() => handleDeliver(order)}>Mark as Delivered</button>
           </div>
         ))
       )}
