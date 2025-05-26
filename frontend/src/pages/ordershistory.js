@@ -114,7 +114,7 @@ function BuyerOrders() {
     <h4>Items:</h4>
     {order.items.map((item, idx) => (
   <div key={idx} style={{ paddingLeft: '15px', marginBottom: '10px' }}>
-    {/* {order.orderType === "Sell" && order.status === "completed" && order.otpHash && ( */}
+    {(order.orderType === "Sell" && order.status === "completed" || order.orderType === "Buy") && order.otpHash && (
       <>
         <p><strong>Item Name:</strong> {item.name || "N/A"}</p>
         <p><strong>Price per Item:</strong> ₹{item.price || "N/A"}</p>
@@ -124,7 +124,7 @@ function BuyerOrders() {
           ₹{item.price && item.quantity ? item.price * item.quantity : "N/A"}
         </p>
       </>
-    {/* )} */}
+    )}
   </div>
 ))}
 
