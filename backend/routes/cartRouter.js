@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Cart = require('../models/cart');  // adjust path if needed
 const validateCartData = require('../middlewares/cartValidation');
-
+const mongoose = require("mongoose");
 // Get cart by userId (returns the entire cart document with items array)
 router.get('/:userId', async (req, res) => {
   const userId = req.params.userId;
@@ -29,6 +29,7 @@ router.get('/:userId', async (req, res) => {
 
 
 // Add or update item in cart
+// Add or update item in cart
 router.post('/', async (req, res) => {
   try {
     console.log(req.body);
@@ -40,7 +41,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ errors });
     }
 
-    // ✅ Important: Find cart by both userId and sellerId
+    // Change from const to let here
     let cart = await Cart.findOne({ userId, sellerId });
 
     if (!cart) {
@@ -119,29 +120,31 @@ router.delete('/:userId/remove/:itemId', async (req, res) => {
   }
 });
 
-// Optional: Checkout route to clear cart or place order (depends on your business logic)
-router.post('/:userId/checkout', async (req, res) => {
-  try {
-    
+
+  router.delete("/:userId/clear", async (req, res) => {
     const { userId } = req.params;
-
-    const cart = await Cart.findOne({ userId });
-
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty or not found' });
+  
+    console.log("Hit DELETE /cart/:userId/clear with userId:", userId);
+  
+    try {
+      const buyerObjectId = new mongoose.Types.ObjectId(userId);
+  
+      // ❗ Use correct field: userId
+      const carts = await Cart.find({ userId: buyerObjectId });
+  
+      if (!carts || carts.length === 0) {
+        return res.status(404).json({ message: "No carts found for user" });
+      }
+  
+      for (const cart of carts) {
+        await cart.deleteOne(); // delete the whole cart document
+      }
+  
+      res.status(200).json({ message: "Carts deleted successfully" });
+    } catch (err) {
+      console.error("Error clearing cart:", err);
+      res.status(500).json({ message: "Internal server error", error: err.message });
     }
-
-    // TODO: Process order logic here (payment, order creation, etc.)
-
-    // After order placed, clear cart
-    cart.items = [];
-    await cart.save();
-
-    res.status(200).json({ message: 'Order placed successfully!' });
-  } catch (error) {
-    console.error('Error during checkout:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+  });
 
 module.exports = router;

@@ -75,7 +75,10 @@ router.get('/seller/:sellerId', async (req, res) => {
 
   try {
     // Find all orders where buyerId matches
-    const orders = await Order.find({ sellerId });
+    const orders = await Order.find({
+      sellerId,
+      status: { $ne: 'pending' }  // Exclude pending orders
+    });
 
     if (!orders.length) {
       return res.status(404).json({ message: 'No orders found for this buyer' });

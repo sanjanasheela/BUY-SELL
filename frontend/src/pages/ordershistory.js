@@ -94,29 +94,43 @@ function BuyerOrders() {
       <Navbar />
       <h2>Your Orders</h2>
       {orders.map((order) => (
-        <div key={order._id}>
-          <p><strong>Order Type:</strong> {order.orderType}</p>
-          <p><strong>Transaction ID:</strong> {order.transactionId}</p>
-          <p><strong>Seller ID:</strong> {order.sellerId}</p>
-          <p><strong>Status:</strong> {order.status}</p>
-          <p><strong>OTP:</strong> {order.otpHash}</p>
-          <p><strong>Total Amount:</strong> ₹{order.totalAmount}</p>
-          <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+  <div key={order._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
+    
+    <p><strong>Order Type:</strong> {order.orderType}</p>
+    <p><strong>Transaction ID:</strong> {order.transactionId}</p>
+    <p><strong>Seller ID:</strong> {order.sellerId}</p>
+    <p><strong>Status:</strong> {order.status}</p>
+    
+    {/* Show OTP only if buyer order and status not complete */}
+    {order.orderType === "Buy" && order.status !== "completed" && order.otpHash && (
+      <p><strong>OTP:</strong> {order.otpHash}</p>
+    )}
 
-          <h4>Items:</h4>
-          {order.items.map((item, idx) => (
-            <div key={idx}>
-              <p><strong>Item Name:</strong> {item.name || "N/A"}</p>
-              <p><strong>Price per Item:</strong> ₹{item.price || "N/A"}</p>
-              <p><strong>Quantity:</strong> {item.quantity || 1}</p>
-              <p>
-                <strong>Subtotal:</strong>{" "}
-                ₹{item.price && item.quantity ? item.price * item.quantity : "N/A"}
-              </p>
-            </div>
-          ))}
-        </div>
-      ))}
+    {/* For Sell orders or completed Buy orders, no OTP shown */}
+
+    <p><strong>Total Amount:</strong> ₹{order.totalAmount}</p>
+    <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+
+    <h4>Items:</h4>
+    {order.items.map((item, idx) => (
+  <div key={idx} style={{ paddingLeft: '15px', marginBottom: '10px' }}>
+    {/* {order.orderType === "Sell" && order.status === "completed" && order.otpHash && ( */}
+      <>
+        <p><strong>Item Name:</strong> {item.name || "N/A"}</p>
+        <p><strong>Price per Item:</strong> ₹{item.price || "N/A"}</p>
+        <p><strong>Quantity:</strong> {item.quantity || 1}</p>
+        <p>
+          <strong>Subtotal:</strong>{" "}
+          ₹{item.price && item.quantity ? item.price * item.quantity : "N/A"}
+        </p>
+      </>
+    {/* )} */}
+  </div>
+))}
+
+  </div>
+))}
+
     </div>
   );
 }

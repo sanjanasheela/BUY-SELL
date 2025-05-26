@@ -78,24 +78,93 @@ function MyCart() {
       alert("Failed to remove item from cart.");
     }
   };
-
   const handleOrder = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/${user._id}`, {
-        method: "POST",
-      });
-      const result = await response.json();
-
-      if (response.ok) {
-        alert("Order placed successfully!");
-        fetchCart();
-      } else {
-        alert(result.message || "Order failed!");
-      }
-    } catch (err) {
-      alert("Something went wrong while placing the order.");
+    if (cartItems.length === 0) {
+      alert("Cart is empty.");
+      return;
     }
+  
+    // Group items by sellerId
+    const sellerItemMap = {};
+    cartItems.forEach(item => {
+      if (!sellerItemMap[item.sellerId]) {
+        sellerItemMap[item.sellerId] = [];
+      }
+      sellerItemMap[item.sellerId].push({
+        itemId: item.itemId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity ?? 1,
+      });
+    });
+  
+    // Send one order per seller
+    for (const [sellerId, items] of Object.entries(sellerItemMap)) {
+      const totalAmount = items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+  
+      const orderData = {
+        transactionId: `TXN-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+        buyerId: user._id,
+        sellerId,
+        items,
+        totalAmount,
+        otpHash: "dummy_otp_hash_value"
+      };
+  
+      console.log("Sending order data:", JSON.stringify(orderData, null, 2));
+  
+      try {
+        const response = await fetch(`http://localhost:8080/orderhis`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+          console.log("Order placed:", result);
+        } else {
+          console.error("Failed order:", result);
+          alert(result.message || "Failed to place order for some items.");
+        }
+      } catch (err) {
+        console.error("Error placing order:", err);
+        alert("Something went wrong while placing the order.");
+      }
+        // ...after all orders are placed
+  try {
+    const clearResponse = await fetch(`http://localhost:8080/cart/${user._id}/clear`, {
+      method: "DELETE",
+    });
+
+    if (!clearResponse.ok) {
+      const errorData = await clearResponse.json();
+      throw new Error(errorData.message || "Failed to clear cart");
+    }
+
+    console.log("Cart cleared successfully.");
+    // setCartItems([]);
+    // setTotalCost(0);
+    alert("All orders placed and cart cleared!");
+  } catch (clearErr) {
+    console.error("Error clearing cart:", clearErr);
+    alert("Order placed, but failed to clear cart.");
+  }
+
+    }
+  
+    // Clear cart after placing all orders
+    fetchCart();
+    alert("All orders placed successfully!");
   };
+  
+  
   const handleBuyNow = async (item) => {
     const orderData = {
       transactionId: `TXN-${Date.now()}`, // Unique transaction ID
