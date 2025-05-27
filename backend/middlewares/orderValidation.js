@@ -26,14 +26,7 @@ function validateOrderData(orderData) {
     errors.items = "At least one item is required.";
   } else {
     orderData.items.forEach((item, index) => {
-      if (
-        orderData.buyerId &&
-        item.sellerId &&
-        orderData.buyerId === item.sellerId
-      ) {
-        errors.buyerId = "buyerId and sellerId cannot be the same.";
-        errors.sellerId = "buyerId and sellerId cannot be the same.";
-      }
+      
       // Check sellerId
   if (!item.sellerId || !isValidObjectId(item.sellerId)) {
     errors.sellerId = "Valid sellerId is required.";

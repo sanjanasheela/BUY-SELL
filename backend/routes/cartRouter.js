@@ -3,6 +3,7 @@ const router = express.Router();
 const Cart = require('../models/cart');  // adjust path if needed
 const validateCartData = require('../middlewares/cartValidation');
 const mongoose = require("mongoose");
+const Item = require('../models/sell');
 // Get cart by userId (returns the entire cart document with items array)
 router.get('/:userId', async (req, res) => {
   const userId = req.params.userId;
@@ -28,8 +29,6 @@ router.get('/:userId', async (req, res) => {
 
 
 
-// Add or update item in cart
-// Add or update item in cart
 router.post('/', async (req, res) => {
   try {
     console.log(req.body);
@@ -40,53 +39,81 @@ router.post('/', async (req, res) => {
     if (!isValid) {
       return res.status(400).json({ errors });
     }
+
     console.log('validated cart');
 
-    // Change from const to let here
-    let cart = await Cart.findOne({ userId});
+    // 1. Check item availability
+    const item = await Item.findOne({ _id: itemId, sellerid:sellerId });
 
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found for this seller' });
+    }
+
+    const requestedQty = quantity || 1;
+
+    // 2. Check existing cart to sum existing quantity (if present)
+    let cart = await Cart.findOne({ userId });
+console.log(item);
+console.log(cart);
+    let existingQty = 0;
+
+    if (cart) {
+      const existingItem = cart.items.find(
+        (i) => i.itemId.toString() === itemId.toString()
+      );
+      if (existingItem) {
+        existingQty = existingItem.quantity;
+      }
+    }
+console.log(existingQty);
+    const totalRequested = existingQty + requestedQty;
+    console.log(totalRequested);
+    if (totalRequested > item.sellquantity) {
+      return res.status(400).json({
+        message: `Only ${item.quantity - existingQty} more unit(s) available in stock`,
+      });
+    }
+
+    // 3. Create or update cart
     if (!cart) {
-      // Create new cart
       cart = new Cart({
         userId,
-        
         items: [{
           sellerId,
           itemId,
           name,
           price,
-          quantity: quantity || 1,
+          quantity: requestedQty,
         }],
         createdAt: Date.now(),
       });
-    }
-    // console.log('addeddd');
-     else {
-     
+    } else {
       const existingItemIndex = cart.items.findIndex(
         (item) => item.itemId.toString() === itemId.toString()
       );
 
       if (existingItemIndex > -1) {
-        cart.items[existingItemIndex].quantity += quantity || 1;
+        cart.items[existingItemIndex].quantity += requestedQty;
       } else {
         cart.items.push({
           sellerId,
           itemId,
           name,
           price,
-          quantity: quantity || 1,
+          quantity: requestedQty,
         });
       }
     }
 
     await cart.save();
     res.status(201).json(cart);
+
   } catch (error) {
     console.error('Error saving cart:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 // Remove item from cart

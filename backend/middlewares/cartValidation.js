@@ -24,13 +24,13 @@ function validateCartData(data) {
   }
 
   // Prevent user from buying their own product
-  // if (
-  //   mongoose.Types.ObjectId.isValid(userId) &&
-  //   mongoose.Types.ObjectId.isValid(sellerId) &&
-  //   userId === sellerId
-  // ) {
-  //   errors.push('User cannot buy their own product.');
-  // }
+  if (
+    mongoose.Types.ObjectId.isValid(userId) &&
+    mongoose.Types.ObjectId.isValid(sellerId) &&
+    userId === sellerId
+  ) {
+    errors.push('User cannot buy their own product.');
+  }
 
   // Validate itemId
   if (!itemId) {
