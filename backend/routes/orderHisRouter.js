@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
   // req.body.sellerId = req.body.sellerId || defaultSellerId;
 
   const { isValid, errors } = validateOrderData(req.body);
-
+console.log(req.body);
   if (!isValid) {
     return res.status(400).json({ errors });
   }

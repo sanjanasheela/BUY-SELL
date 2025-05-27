@@ -122,7 +122,7 @@ function BuyerOrders() {
         </p>
 
         <p><strong>Transaction ID:</strong> {order.transactionId}</p>
-        <p><strong>Seller ID:</strong> {order.sellerId}</p>
+        <p><strong>Seller ID:</strong> {order.items[0].sellerId}</p>
 
         {order.orderType === "Buy" && order.status !== "completed" && order.otpHash && (
           <p><strong>OTP:</strong> {order.otpHash}</p>

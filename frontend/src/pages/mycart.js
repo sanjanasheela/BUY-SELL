@@ -89,12 +89,14 @@ function MyCart() {
         sellerItemMap[item.sellerId] = [];
       }
       sellerItemMap[item.sellerId].push({
+        sellerId:item.sellerId,
         itemId: item.itemId,
         name: item.name,
         price: item.price,
         quantity: item.quantity ?? 1,
       });
     });
+    console.log(cartItems);
 
     // Send one order per seller
     for (const [sellerId, items] of Object.entries(sellerItemMap)) {
@@ -106,10 +108,10 @@ function MyCart() {
       const orderData = {
         transactionId: `TXN-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
         buyerId: user._id,
-        sellerId,
+       
         items,
         totalAmount,
-        otpHash: "dummy_otp_hash_value",
+
       };
 
       console.log("Sending order data:", JSON.stringify(orderData, null, 2));
@@ -135,30 +137,29 @@ function MyCart() {
         console.error("Error placing order:", err);
         alert("Something went wrong while placing the order.");
       }
-      // ...after all orders are placed
-      try {
-        const clearResponse = await fetch(
-          `http://localhost:8080/cart/${user._id}/clear`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (!clearResponse.ok) {
-          const errorData = await clearResponse.json();
-          throw new Error(errorData.message || "Failed to clear cart");
-        }
-
-        console.log("Cart cleared successfully.");
-        // setCartItems([]);
-        // setTotalCost(0);
-        alert("All orders placed and cart cleared!");
-      } catch (clearErr) {
-        console.error("Error clearing cart:", clearErr);
-        alert("Order placed, but failed to clear cart.");
-      }
     }
+    // ...after all orders are placed
+    try {
+      const clearResponse = await fetch(
+        `http://localhost:8080/cart/${user._id}/clear`,
+        {
+          method: "DELETE",
+        }
+      );
 
+      if (!clearResponse.ok) {
+        const errorData = await clearResponse.json();
+        throw new Error(errorData.message || "Failed to clear cart");
+      }
+
+      console.log("Cart cleared successfully.");
+      // setCartItems([]);
+      // setTotalCost(0);
+      alert("All orders placed and cart cleared!");
+    } catch (clearErr) {
+      console.error("Error clearing cart:", clearErr);
+      alert("Order placed, but failed to clear cart.");
+    }
     // Clear cart after placing all orders
     fetchCart();
     alert("All orders placed successfully!");
@@ -168,7 +169,7 @@ function MyCart() {
     const orderData = {
       transactionId: `TXN-${Date.now()}`, // Unique transaction ID
       buyerId: user._id,
-      
+
       items: [
         {
           sellerId: item.sellerId, // Make sure `item` includes sellerId
@@ -179,7 +180,6 @@ function MyCart() {
         },
       ],
       totalAmount: item.price * (item.quantity ?? 1),
-      
     };
 
     console.log("Sending order data:", orderData); // ✅ Print to check
@@ -235,11 +235,10 @@ function MyCart() {
               <button onClick={() => handleBuyNow(item)}>Buy Now</button>
             </div>
             <hr />
-            </div>
+          </div>
         ))}
-            <p className="cart-total">Total: ₹{totalCost}</p>
-            <button onClick={handleOrder}>Place Final Order</button>
-          
+        <p className="cart-total">Total: ₹{totalCost}</p>
+        <button onClick={handleOrder}>Place Final Order</button>
       </div>
     </>
   );
