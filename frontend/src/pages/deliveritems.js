@@ -29,7 +29,7 @@ function DeliverItems() {
   };
 
   const handleDeliver = async (order) => {
-    const { buyerId, sellerId, transactionId, totalAmount, _id } = order;
+    const { buyerId, sellerId, transactionId, totalAmount, _id ,items} = order;
     const otp = otpInputs[_id];
   
     if (!otp) {
@@ -60,18 +60,22 @@ function DeliverItems() {
   
       alert(data.message); // success message
 
-      // console.log(order.items);
-      // for (const item of order.items) {
-      //   const deleteItemResponse = await fetch(`http://localhost:8080/sell/${item.itemId}`, {
-      //     method: 'DELETE',
-      //   });
-      
-      //   if (!deleteItemResponse.ok) {
-      //     console.error(`Failed to delete item ${item._id}`);
-      //     alert(`Failed to delete item ${item.name} from the server`);
-      //     return; // optional: stop if one fails
-      //   }
-      // }
+      // ✅ Step 2: Update item quantities for each delivered item
+    for (const item of items) {
+      console.log('item',item);
+      await fetch(`http://localhost:8080/sell/edit`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id:item.itemId,
+          orderedQuantity: item.quantity || 1,
+         
+          
+        }),
+      });
+    }
+
+
       // Step 3: Update local state only after successful deletion on server
       setOrdersToDeliver((prevOrders) => prevOrders.filter((o) => o._id !== _id));
   

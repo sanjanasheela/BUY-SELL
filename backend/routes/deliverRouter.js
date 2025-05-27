@@ -4,29 +4,32 @@ const mongoose = require('mongoose');
 const Order = require('../models/orders'); // adjust path to your Order model
 
 router.get('/:sellerId', async (req, res) => {
-    const sellerId = req.params.sellerId;
-  
-    if (!mongoose.Types.ObjectId.isValid(sellerId)) {
-      return res.status(400).json({ error: 'Invalid seller ID' });
+  const sellerId = req.params.sellerId;
+
+  if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+    return res.status(400).json({ error: 'Invalid seller ID' });
+  }
+
+  try {
+    const orders = await Order.find({
+      items: {
+        $elemMatch: {
+          sellerId: sellerId
+        }
+      },
+      status: { $ne: 'completed' }  // Exclude pending orders
+    });
+
+    if (!orders.length) {
+      return res.status(404).json({ message: 'No orders found for this seller' });
     }
-  
-    try {
-      // Find all orders where sellerId matches and status is "pending"
-      const orders = await Order.find(
-        { sellerId, status: 'pending' },
-        { otpHash: 0 } // exclude otpHash
-      );
-  
-      if (!orders.length) {
-        return res.status(404).json({ message: 'No pending transactions found for this seller' });
-      }
-  
-      res.json({ orders });
-    } catch (err) {
-      console.error('Error fetching seller transactions:', err);
-      res.status(500).json({ error: 'Server error' });
-    }
-  });
+
+    res.json({ orders });
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
   
 
 router.post('/complete', async (req, res) => {

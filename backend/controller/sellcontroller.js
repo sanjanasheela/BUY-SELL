@@ -3,7 +3,7 @@ const ItemModel = require('../models/sell');
 const sellItem = async (req, res) => {
   try {
 
-    const { itemname, price, description, category, sellerid } = req.body;
+    const { itemname, price, description, category, sellerid, sellquantity } = req.body;
 
     
    
@@ -14,9 +14,10 @@ const sellItem = async (req, res) => {
       price,
       description,
       category,
-      sellerid
+      sellerid,
+      sellquantity,
     });
-    // console.log(newItem);
+    console.log(newItem);
 
     await newItem.save();
     res.status(201).json({ message: 'Item listed successfully', item: newItem });

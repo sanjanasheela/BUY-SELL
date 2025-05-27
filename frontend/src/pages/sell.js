@@ -9,6 +9,7 @@ function Sell() {
     description: '',
     category: '',
     sellerId: '', 
+    sellquantity:'',
   });
 
 
@@ -35,8 +36,8 @@ function Sell() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { itemname, price, description, category, sellerId } = formData;
-    if (!itemname || !price || !description || !category || !sellerId) {
+    const { itemname, price, description, category, sellerId,sellquantity } = formData;
+    if (!itemname || !price || !description || !category || !sellerId ||!sellquantity) {
       return handleError('Please fill all fields');
     }
     const categoryArray = category.split(',').map(cat => cat.trim()).filter(cat => cat !== '');
@@ -54,7 +55,8 @@ function Sell() {
           price: Number(price),
           description,
           category: categoryArray,
-          sellerid: sellerId, // match backend spelling (lowercase `id`)
+          sellerid: sellerId, 
+          sellquantity: sellquantity,// match backend spelling (lowercase `id`)
         }),
       });
 
@@ -67,7 +69,8 @@ function Sell() {
           price: '',
           description: '',
           category: '',
-          sellerId,
+          sellerId:'',
+          sellquantity:'',
         });
       } else {
         handleError(result.message || "Failed to list item.");
@@ -118,6 +121,15 @@ function Sell() {
               type="text"
               name="category"
               value={formData.category}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label>Quantity left:</label>
+            <input
+              type="number"
+              name="sellquantity"
+              value={formData.sellquantity}
               onChange={handleChange}
             />
           </div>

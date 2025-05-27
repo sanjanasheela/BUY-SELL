@@ -103,7 +103,7 @@ function Login() {
           width: 100%;
           margin: 0;
           font-family: Arial, sans-serif;
-          overflow: hidden;
+          // overflow: hidden;
         }
 
         body {

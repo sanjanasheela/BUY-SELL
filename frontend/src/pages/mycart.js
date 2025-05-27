@@ -26,7 +26,7 @@ function MyCart() {
       const mergedItems = data.carts.flatMap((cart) => {
         return (cart.items || []).map((item) => ({
           ...item,
-          sellerId: cart.sellerId, // Ensure sellerId is included
+          // sellerId: cart.sellerId, // Ensure sellerId is included
         }));
       });
 
@@ -168,9 +168,10 @@ function MyCart() {
     const orderData = {
       transactionId: `TXN-${Date.now()}`, // Unique transaction ID
       buyerId: user._id,
-      sellerId: item.sellerId, // Make sure `item` includes sellerId
+      
       items: [
         {
+          sellerId: item.sellerId, // Make sure `item` includes sellerId
           itemId: item.itemId,
           name: item.name,
           price: item.price,
@@ -178,7 +179,7 @@ function MyCart() {
         },
       ],
       totalAmount: item.price * (item.quantity ?? 1),
-      otpHash: "dummy_otp_hash_value", // Replace with real OTP hash logic later
+      
     };
 
     console.log("Sending order data:", orderData); // ✅ Print to check

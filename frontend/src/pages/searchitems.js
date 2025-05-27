@@ -98,6 +98,7 @@ function SearchItems() {
                         : item.category}
                     </p>
                     <p>Seller ID: {item.sellerid}</p>
+                    <p>Quantity in stock: {item.sellquantity}</p>
                   </div>
                 ))
               ) : (

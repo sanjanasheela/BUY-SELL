@@ -9,13 +9,13 @@ router.get('/:userId', async (req, res) => {
 
   try {
     const cartEntries = await Cart.find({ userId });
-
+// console.log(cartEntries);
     if (!cartEntries || cartEntries.length === 0) {
       return res.status(404).json({ message: 'No cart items found for this user.' });
     }
 
     const carts = cartEntries.map(entry => ({
-      sellerId: entry.sellerId,
+      // sellerId: entry.sellerId,
       items: entry.items || []
     }));
 
@@ -43,14 +43,15 @@ router.post('/', async (req, res) => {
     console.log('validated cart');
 
     // Change from const to let here
-    let cart = await Cart.findOne({ userId, sellerId });
+    let cart = await Cart.findOne({ userId});
 
     if (!cart) {
       // Create new cart
       cart = new Cart({
         userId,
-        sellerId,
+        
         items: [{
+          sellerId,
           itemId,
           name,
           price,
@@ -70,6 +71,7 @@ router.post('/', async (req, res) => {
         cart.items[existingItemIndex].quantity += quantity || 1;
       } else {
         cart.items.push({
+          sellerId,
           itemId,
           name,
           price,

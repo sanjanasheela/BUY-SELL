@@ -18,16 +18,26 @@ function validateOrderData(orderData) {
     errors.buyerId = "Valid buyerId is required.";
   }
 
-  // Check sellerId
-  if (!orderData.sellerId || !isValidObjectId(orderData.sellerId)) {
-    errors.sellerId = "Valid sellerId is required.";
-  }
+  
+  
 
   // Validate items array
   if (!Array.isArray(orderData.items) || orderData.items.length === 0) {
     errors.items = "At least one item is required.";
   } else {
     orderData.items.forEach((item, index) => {
+      if (
+        orderData.buyerId &&
+        item.sellerId &&
+        orderData.buyerId === item.sellerId
+      ) {
+        errors.buyerId = "buyerId and sellerId cannot be the same.";
+        errors.sellerId = "buyerId and sellerId cannot be the same.";
+      }
+      // Check sellerId
+  if (!item.sellerId || !isValidObjectId(item.sellerId)) {
+    errors.sellerId = "Valid sellerId is required.";
+  }
       if (!item.itemId || !isValidObjectId(item.itemId)) {
         errors[`items[${index}].itemId`] = "Valid itemId is required.";
       }

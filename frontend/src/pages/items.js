@@ -17,8 +17,8 @@ function ItemDetails() {
     try {
       const userProfileString = localStorage.getItem("userProfile");
       const userProfile = JSON.parse(userProfileString);
-      const userId = userProfile._id;
-      // const sellerId = userProfile.Array_sellerID;
+      const userId = userProfile?._id;
+  
       if (!userId) {
         alert("User not logged in.");
         return;
@@ -29,14 +29,14 @@ function ItemDetails() {
         return;
       }
   
-      // Prepare POST body to match backend expectation
+    
       const postBody = {
         userId: userId,
-        sellerId:item.sellerid,
+        sellerId: item.sellerid,
         itemId: item._id,
-        name: item.itemname,   // Include item name
-        price: item.price,     // Include item price
-        quantity: 1            // You can change quantity if needed
+        name: item.itemname,
+        price: item.price,
+        quantity: 1
       };
   
       console.log("POST body being sent:", postBody);
@@ -83,7 +83,7 @@ function ItemDetails() {
         <p><strong>Description:</strong> {item.description}</p>
         <p><strong>Category:</strong> {Array.isArray(item.category) ? item.category.join(", ") : item.category}</p>
         <p><strong>Seller ID:</strong> {item.sellerid}</p>
-  
+        <p><strong>Quantity left:</strong>{item.sellquantity}</p>
         <button onClick={handleAddToCart}>
           Add to Cart
         </button>

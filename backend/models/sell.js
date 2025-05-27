@@ -19,6 +19,10 @@ const ItemSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  sellquantity:{
+    type: Number,
+    required: true,
+  },
 });
 
 const ItemModel = mongoose.model("items", ItemSchema);

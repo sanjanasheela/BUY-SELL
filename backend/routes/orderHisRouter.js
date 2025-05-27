@@ -66,6 +66,7 @@ router.get('/:buyerId', async (req, res) => {
   }
 });
 
+
 router.get('/seller/:sellerId', async (req, res) => {
   const sellerId = req.params.sellerId;
 
@@ -74,22 +75,36 @@ router.get('/seller/:sellerId', async (req, res) => {
   }
 
   try {
-    // Find all orders where buyerId matches
     const orders = await Order.find({
-      sellerId,
+      items: {
+        $elemMatch: {
+          sellerId: sellerId
+        }
+      },
       status: { $ne: 'pending' }  // Exclude pending orders
     });
 
     if (!orders.length) {
-      return res.status(404).json({ message: 'No orders found for this buyer' });
+      return res.status(404).json({ message: 'No orders found for this seller' });
     }
-    console.log(orders);
-    res.json({ orders });
+
+    // Optional: filter items to include only those belonging to this seller
+    const filteredOrders = orders.map(order => {
+      const filteredItems = order.items.filter(item => item.sellerId.toString() === sellerId);
+      return {
+        ...order.toObject(),
+        items: filteredItems
+      };
+    });
+
+    res.json({ orders: filteredOrders });
   } catch (err) {
     console.error('Error fetching orders:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+module.exports = router;
 
 
 module.exports = router;

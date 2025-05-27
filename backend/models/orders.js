@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
+  sellerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   itemId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
@@ -34,11 +39,7 @@ const OrderSchema = new Schema({
     ref: "User",
     required: true,
   },
-  sellerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+ 
   items: {
     type: [ItemSchema],
     required: true,
