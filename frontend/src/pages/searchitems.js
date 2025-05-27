@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../navbar";
-import './css/search.css'
+import "./css/search.css";
 function SearchItems() {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,7 +65,7 @@ function SearchItems() {
       <Navbar />
       <div className="page-content">
         <h2>All Items</h2>
-  
+
         <div className="main-section">
           {/* Left side: Search and items */}
           <div style={{ flex: 3 }}>
@@ -76,15 +76,26 @@ function SearchItems() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-  
-            <div className="items-grid">
+
+            <div
+              className="items-grid"
+              
+            >
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
                   <div
                     key={item._id}
                     className="item-card"
+                    style={{
+                      borderLeftColor: "purple",
+                      borderLeftStyle: "solid",
+                      borderLeftWidth: "5px",
+                    }}
                     onClick={() => {
-                      localStorage.setItem("selectedItem", JSON.stringify(item));
+                      localStorage.setItem(
+                        "selectedItem",
+                        JSON.stringify(item)
+                      );
                       navigate(`/item/${item._id}`);
                     }}
                   >
@@ -106,7 +117,7 @@ function SearchItems() {
               )}
             </div>
           </div>
-  
+
           {/* Right side: Filter section */}
           <div>
             <h3>Filter by Category</h3>
@@ -127,8 +138,6 @@ function SearchItems() {
       </div>
     </>
   );
-  
-  
 }
 
 export default SearchItems;
