@@ -223,7 +223,7 @@ function MyCart() {
                 <strong>{item.name || "Unnamed Item"}</strong>
               </p>
               <p>
-                ₹{item.price ?? "N/A"} ({item.quantity ?? 1})
+                ₹{item.price ?? "N/A"} X {item.quantity ?? 1}
               </p>
               <p>
                 <strong>Seller ID:</strong> {item.sellerId ?? "Unknown"}
