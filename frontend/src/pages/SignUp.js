@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../utils";
-// import '../index.css'
 
 function Signup() {
   const [signupInfo, setSignupInfo] = useState({
@@ -17,36 +16,22 @@ function Signup() {
   const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
-    const copySignupInfo = { ...signupInfo };
-    copySignupInfo[name] = value;
-    setSignupInfo(copySignupInfo);
+    setSignupInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const { firstname, lastname,email, age,contactnumber,password } = signupInfo;
-    if (
-      !firstname ||
-      !lastname ||
-      !email ||
-      !age ||
-      !contactnumber ||
-      !password
-    ) {
+    const { firstname, lastname, email, age, contactnumber, password } = signupInfo;
+    if (!firstname || !lastname || !email || !age || !contactnumber || !password) {
       return handleError("Name, email, and password are required");
     }
+
     try {
-      // Use env variable for API URL or hardcode if needed
-      const url = `${
-        process.env.REACT_APP_API_URL || "http://localhost:8080"
-      }/auth/signup`;
+      const url = `${process.env.REACT_APP_API_URL || "http://localhost:8080"}/auth/signup`;
 
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signupInfo),
       });
 
@@ -55,105 +40,187 @@ function Signup() {
 
       if (success) {
         handleSuccess(message);
-
-        const { firstname, lastname, email, age, contactnumber } = signupInfo;
-        localStorage.setItem('userProfile', JSON.stringify({
-          firstname,
-          lastname,
-          email,
-          age,
-          contactnumber
-        }));
-
-        setTimeout(() => {
-          navigate("/home");
-        }, 1000);
-      } else if (error) {
-        const details = error?.details?.[0]?.message || "Signup failed";
-        handleError(details);
+        localStorage.setItem("userProfile", JSON.stringify({ firstname, lastname, email, age, contactnumber }));
+        setTimeout(() => navigate("/home"), 1000);
       } else {
-        handleError(message || "Signup failed");
+        const details = error?.details?.[0]?.message || message || "Signup failed";
+        handleError(details);
       }
-
-      console.log(result);
     } catch (err) {
-      handleError(err.message || err);
+      handleError(err.message || "Something went wrong");
     }
   };
 
   return (
-    <div className="container">
-      <h1>Signup</h1>
-      <form onSubmit={handleSignup}>
-        <div>
-          <label htmlFor="firstname">First Name</label>
-          <input
-            onChange={handleChange}
-            type="text"
-            name="firstname"
-            autoFocus
-           
-            value={signupInfo.firstname}
-          />
-        </div>
-        <div>
-          <label htmlFor="lastname">Last Name</label>
-          <input
-            onChange={handleChange}
-            type="text"
-            name="lastname"
-            autoFocus
-           
-            value={signupInfo.lastname}
-          />
-        </div>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            onChange={handleChange}
-            type="email"
-            name="email"
-            
-            value={signupInfo.email}
-          />
-        </div>
-        <div>
-          <label htmlFor="age">Age</label>
-          <input
-            onChange={handleChange}
-            type="number"
-            name="age"
-            value={signupInfo.age}
-          />
-        </div>
+    <>
+      <style>{`
+        html, body {
+          height: 100%;
+          width: 100%;
+          margin: 0;
+          font-family: Arial, sans-serif;
+          overflow: auto;
+        }
 
-        <div>
-          <label htmlFor="contactnumber">Contact Number</label>
-          <input
-            onChange={handleChange}
-            type="tel"
-            name="contactnumber"
-            value={signupInfo.contactnumber}
-          />
-        </div>
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          background-color: #f4f4f4;
+          padding-top: 40px;
+          padding-bottom: 200px;
+        }
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            onChange={handleChange}
-            type="password"
-            name="password"
-            
-            value={signupInfo.password}
-          />
-        </div>
-        <button type="submit">Signup</button>
-        <span>
-          Already have an account ?<Link to="/login">Login</Link>
-        </span>
-      </form>
-      {/* <ToastContainer /> */}
-    </div>
+        .container {
+          background-color: #fff;
+          padding: 32px 48px;
+          border-radius: 10px;
+          width: 100%;
+          max-width: 600px;
+          box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.2);
+        }
+
+        .container h1 {
+          margin-bottom: 20px;
+          text-align: center;
+        }
+
+        .container form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .container div {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .container input {
+          width: 100%;
+          font-size: 18px;
+          padding: 10px;
+          border: none;
+          outline: none;
+          border-bottom: 1px solid #333;
+        }
+
+        .container input::placeholder {
+          font-size: 14px;
+          font-style: italic;
+        }
+
+        button {
+          background-color: purple;
+          border: none;
+          font-size: 18px;
+          color: white;
+          border-radius: 6px;
+          padding: 12px;
+          cursor: pointer;
+          margin-top: 10px;
+          transition: background-color 0.3s;
+        }
+
+        button:hover {
+          background-color: #5e0094;
+        }
+
+        span {
+          font-size: 14px;
+          text-align: center;
+          margin-top: 12px;
+        }
+
+        span a {
+          margin-left: 4px;
+          color: purple;
+          text-decoration: none;
+        }
+
+        span a:hover {
+          text-decoration: underline;
+        }
+      `}</style>
+
+      <div className="container">
+        <h1>Signup</h1>
+        <form onSubmit={handleSignup}>
+          <div>
+            <label htmlFor="firstname">First Name</label>
+            <input
+              type="text"
+              name="firstname"
+              placeholder="Enter your firstname..."
+              value={signupInfo.firstname}
+              onChange={handleChange}
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label htmlFor="lastname">Last Name</label>
+            <input
+              type="text"
+              name="lastname"
+              placeholder="Enter your lastname..."
+              value={signupInfo.lastname}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email..."
+              value={signupInfo.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="age">Age</label>
+            <input
+              type="number"
+              name="age"
+              placeholder="Enter your age..."
+              value={signupInfo.age}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="contactnumber">Contact Number</label>
+            <input
+              type="tel"
+              name="contactnumber"
+              placeholder="Enter your contact number..."
+              value={signupInfo.contactnumber}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password..."
+              value={signupInfo.password}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit">Signup</button>
+          <span>
+            Already have an account?<Link to="/login">Login</Link>
+          </span>
+        </form>
+        <ToastContainer />
+      </div>
+    </>
   );
 }
 

@@ -1,69 +1,63 @@
 /* Global Reset */
-/* ::before,
+::before,
 ::after {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-} */
+}
 
 html,
 body {
   height: 100%;
-  width: 100px;
+  width: 100%;
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
-  padding-top: 10px; /* enough space below the navbar */
-}
-
-/* Navbar fixed on top */
-.navbar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: #fff;
-  padding: 20px 32px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+ 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
-/* Main container */
-.profile-container {
+/* Centered signup container */
+.container {
   background-color: #fff;
-  padding: 70px;
-  border-radius: 12px;
-  max-width: 900px;
+  padding: 40px 48px;
+  border-radius: 10px;
   width: 100%;
-  margin: auto;
+  max-width: 600px;
   box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.2);
 }
 
 /* Heading */
-.profile-container h2 {
+.container > h1 {
+  margin-bottom: 24px;
   text-align: center;
-  margin-bottom: 32px;
   font-size: 28px;
   color: #333;
 }
 
-/* Field layout */
-.profile-container > div {
-  margin-bottom: 24px;
+/* Form layout */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+form div {
   display: flex;
   flex-direction: column;
 }
 
 label {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 6px;
   color: #555;
 }
 
+/* Inputs */
 input {
-  padding: 12px;
-  font-size: 18px;
+  font-size: 16px;
+  padding: 10px;
   border: none;
   border-bottom: 1px solid #ccc;
   outline: none;
@@ -74,31 +68,42 @@ input:focus {
   border-bottom-color: #007bff;
 }
 
-span {
-  font-size: 18px;
-  color: #444;
-  padding: 10px 0;
+input::placeholder {
+  font-size: 13px;
+  font-style: italic;
 }
 
-/* Buttons */
+/* Button */
 button {
   background-color: purple;
   border: none;
   font-size: 18px;
   color: white;
   border-radius: 5px;
-  padding: 12px 20px;
+  padding: 12px;
   cursor: pointer;
-  margin-right: 10px;
   transition: background-color 0.3s;
+  margin-top: 12px;
 }
 
 button:hover {
   background-color: #5e0094;
 }
 
-.button-group {
-  display: flex;
-  justify-content: flex-start;
-  margin-top: 30px;
+/* Link line */
+span {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+  text-align: center;
+}
+
+span a {
+  color: purple;
+  text-decoration: none;
+  margin-left: 6px;
+}
+
+span a:hover {
+  text-decoration: underline;
 }

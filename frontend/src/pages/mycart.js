@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../navbar";
-import './css/cart.css'
+import "./css/cart.css";
 function MyCart() {
   const [cartItems, setCartItems] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
@@ -18,20 +18,20 @@ function MyCart() {
     try {
       const response = await fetch(`${baseUrl}/${user._id}`);
       if (!response.ok) throw new Error("Failed to fetch cart");
-  
+
       const data = await response.json();
       console.log("Cart data:", data);
-  
+
       // Combine all items from all sellers
-      const mergedItems = data.carts.flatMap(cart => {
-        return (cart.items || []).map(item => ({
+      const mergedItems = data.carts.flatMap((cart) => {
+        return (cart.items || []).map((item) => ({
           ...item,
           sellerId: cart.sellerId, // Ensure sellerId is included
         }));
       });
-  
+
       setCartItems(mergedItems);
-  
+
       const cost = mergedItems.reduce(
         (sum, item) => sum + item.price * (item.quantity || 1),
         0
@@ -41,7 +41,6 @@ function MyCart() {
       console.error("Error fetching cart:", err);
     }
   };
-  
 
   const handleRemove = async (itemIdToRemove) => {
     try {
@@ -52,7 +51,6 @@ function MyCart() {
           method: "DELETE",
         }
       );
-     
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -83,10 +81,10 @@ function MyCart() {
       alert("Cart is empty.");
       return;
     }
-  
+
     // Group items by sellerId
     const sellerItemMap = {};
-    cartItems.forEach(item => {
+    cartItems.forEach((item) => {
       if (!sellerItemMap[item.sellerId]) {
         sellerItemMap[item.sellerId] = [];
       }
@@ -97,25 +95,25 @@ function MyCart() {
         quantity: item.quantity ?? 1,
       });
     });
-  
+
     // Send one order per seller
     for (const [sellerId, items] of Object.entries(sellerItemMap)) {
       const totalAmount = items.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0
       );
-  
+
       const orderData = {
         transactionId: `TXN-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
         buyerId: user._id,
         sellerId,
         items,
         totalAmount,
-        otpHash: "dummy_otp_hash_value"
+        otpHash: "dummy_otp_hash_value",
       };
-  
+
       console.log("Sending order data:", JSON.stringify(orderData, null, 2));
-  
+
       try {
         const response = await fetch(`http://localhost:8080/orderhis`, {
           method: "POST",
@@ -124,9 +122,9 @@ function MyCart() {
           },
           body: JSON.stringify(orderData),
         });
-  
+
         const result = await response.json();
-  
+
         if (response.ok) {
           console.log("Order placed:", result);
         } else {
@@ -137,78 +135,77 @@ function MyCart() {
         console.error("Error placing order:", err);
         alert("Something went wrong while placing the order.");
       }
-        // ...after all orders are placed
-  try {
-    const clearResponse = await fetch(`http://localhost:8080/cart/${user._id}/clear`, {
-      method: "DELETE",
-    });
+      // ...after all orders are placed
+      try {
+        const clearResponse = await fetch(
+          `http://localhost:8080/cart/${user._id}/clear`,
+          {
+            method: "DELETE",
+          }
+        );
 
-    if (!clearResponse.ok) {
-      const errorData = await clearResponse.json();
-      throw new Error(errorData.message || "Failed to clear cart");
+        if (!clearResponse.ok) {
+          const errorData = await clearResponse.json();
+          throw new Error(errorData.message || "Failed to clear cart");
+        }
+
+        console.log("Cart cleared successfully.");
+        // setCartItems([]);
+        // setTotalCost(0);
+        alert("All orders placed and cart cleared!");
+      } catch (clearErr) {
+        console.error("Error clearing cart:", clearErr);
+        alert("Order placed, but failed to clear cart.");
+      }
     }
 
-    console.log("Cart cleared successfully.");
-    // setCartItems([]);
-    // setTotalCost(0);
-    alert("All orders placed and cart cleared!");
-  } catch (clearErr) {
-    console.error("Error clearing cart:", clearErr);
-    alert("Order placed, but failed to clear cart.");
-  }
-
-    }
-  
     // Clear cart after placing all orders
     fetchCart();
     alert("All orders placed successfully!");
   };
-  
-  
+
   const handleBuyNow = async (item) => {
     const orderData = {
       transactionId: `TXN-${Date.now()}`, // Unique transaction ID
       buyerId: user._id,
-      sellerId: item.sellerId,  // Make sure `item` includes sellerId
+      sellerId: item.sellerId, // Make sure `item` includes sellerId
       items: [
         {
           itemId: item.itemId,
           name: item.name,
           price: item.price,
-          quantity: item.quantity ?? 1
-        }
+          quantity: item.quantity ?? 1,
+        },
       ],
       totalAmount: item.price * (item.quantity ?? 1),
-      otpHash: "dummy_otp_hash_value"  // Replace with real OTP hash logic later
+      otpHash: "dummy_otp_hash_value", // Replace with real OTP hash logic later
     };
-  
-    console.log('Sending order data:', orderData); // ✅ Print to check
-  
+
+    console.log("Sending order data:", orderData); // ✅ Print to check
+
     try {
       const response = await fetch(`http://localhost:8080/orderhis`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(orderData),
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to place order');
+        throw new Error("Failed to place order");
       }
-  
+
       const result = await response.json();
-      console.log('Order placed:', result);
+      console.log("Order placed:", result);
       await handleRemove(item.itemId);
 
-      alert('Item ordered successfully!');
+      alert("Item ordered successfully!");
     } catch (err) {
-      console.error('Error ordering item:', err);
-      alert('Failed to order item');
+      console.error("Error ordering item:", err);
+      alert("Failed to order item");
     }
   };
-  
-  
 
   if (!user) {
     return <p>Please log in to see your cart.</p>;
@@ -219,30 +216,32 @@ function MyCart() {
       <Navbar />
       <div className="cart-container">
         <h2>My Cart</h2>
-  
-        {cartItems.length === 0 ? (
-          <p>Your cart is empty.</p>
-        ) : (
-          <div>
-            {cartItems.map((item) => (
-              <div className="cart-item" key={item._id || item.itemId || item.name}>
-                <p><strong>{item.name || "Unnamed Item"}</strong></p>
-                <p>₹{item.price ?? "N/A"} ({item.quantity ?? 1})</p>
-                <button onClick={() => handleRemove(item.itemId)}>Remove</button>
-                <button onClick={() => handleBuyNow(item)}>Buy Now</button>
-              </div>
-            ))}
-  
+        {cartItems.map((item) => (
+          <div className="cart-item" key={item._id || item.itemId || item.name}>
+            <div className="item-info">
+              <p>
+                <strong>{item.name || "Unnamed Item"}</strong>
+              </p>
+              <p>
+                ₹{item.price ?? "N/A"} ({item.quantity ?? 1})
+              </p>
+              <p>
+                <strong>Seller ID:</strong> {item.sellerId ?? "Unknown"}
+              </p>
+            </div>
+            <div>
+              <button onClick={() => handleRemove(item.itemId)}>Remove</button>
+              <button onClick={() => handleBuyNow(item)}>Buy Now</button>
+            </div>
             <hr />
-  
+            </div>
+        ))}
             <p className="cart-total">Total: ₹{totalCost}</p>
             <button onClick={handleOrder}>Place Final Order</button>
-          </div>
-        )}
+          
       </div>
     </>
   );
-  
 }
 
 export default MyCart;

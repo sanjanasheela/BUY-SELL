@@ -1,91 +1,99 @@
-/* Ensure page starts from top, with spacing for navbar */
+/* Global Reset */
+::before,
+::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-  }
-  
-  .page-content {
-    padding: 100px 40px 40px 40px; /* top padding accounts for fixed navbar */
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  
-  /* Styled heading directly under navbar */
-  .page-content h2 {
-    margin: 0;
-    font-size: 32px;
-    color: #333;
-    text-align: left;
-    font-weight: 700;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-  }
-  
-  /* Container with search + grid + filters */
-  .main-section {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-  }
-  
-  /* Grid layout for items */
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-  }
-  
-  /* Individual item card */
-  .item-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-    padding: 16px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .item-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-  }
-  
-  .item-card h4 {
-    margin-top: 0;
-    font-size: 20px;
-    color: #333;
-  }
-  
-  .item-card p {
-    margin: 8px 0;
-    font-size: 14px;
-    color: #555;
-  }
-  
-  /* Search bar */
-  .search-input {
-    padding: 10px 12px;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-  
-  /* Right side filter styling */
-  h3 {
-    margin-bottom: 16px;
-  }
-  
-  label {
-    font-size: 14px;
-    color: #333;
-  }
-  
-  input[type="checkbox"] {
-    margin-right: 8px;
-  }
-  
+  width: 100%;
+  min-height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding-top: 100px; /* adjust for fixed navbar */
+}
+
+/* Page Wrapper */
+.page-content {
+  padding: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Heading */
+.page-content h2 {
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Layout structure: left = grid, right = filters */
+.main-section {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* Search bar */
+.search-input {
+  padding: 10px 14px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Grid layout for items */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Individual item card (neutral) */
+.item-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Item info */
+.item-card h4 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #333;
+}
+
+.item-card p {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #555;
+}
+
+/* Category filter sidebar */
+.main-section h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+  color: #333;
+}
+
+label {
+  font-size: 14px;
+  color: #444;
+}
+
+input[type="checkbox"] {
+  margin-right: 6px;
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../navbar";
 import './css/orders.css'
+
 function BuyerOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

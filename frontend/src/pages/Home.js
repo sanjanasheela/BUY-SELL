@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../navbar';
 import { handleError, handleSuccess } from '../utils';
 import './css/home.css'
+
+
 function Profile() {
   const [user, setUser] = useState({
     firstname: '',

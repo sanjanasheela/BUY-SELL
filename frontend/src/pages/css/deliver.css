@@ -35,7 +35,7 @@ body {
 }
 
 /* Order card styling */
-.order-card {
+.dellorder-card {
   background-color: #fdfdfd;
   padding: 20px;
   border-radius: 8px;
@@ -45,30 +45,30 @@ body {
 }
 
 /* Info text */
-.order-card p {
+.dellorder-card p {
   margin: 6px 0;
   font-size: 15px;
   color: #333;
 }
 
-.order-card strong {
+.dellorder-card strong {
   color: #111;
 }
 
 /* Item list */
-.order-card ul {
+.dellorder-card ul {
   padding-left: 20px;
   margin-top: 6px;
 }
 
-.order-card li {
+.dellorder-card li {
   font-size: 14px;
   color: #444;
   margin-bottom: 4px;
 }
 
 /* OTP input */
-.order-card input[type="text"] {
+.dellorder-card input[type="text"] {
   padding: 8px 12px;
   font-size: 15px;
   border-radius: 4px;
@@ -78,7 +78,7 @@ body {
 }
 
 /* Button */
-.order-card button {
+.dellorder-card button {
   background-color: purple;
   border: none;
   font-size: 15px;
@@ -91,6 +91,6 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.order-card button:hover {
+.dellorder-card button:hover {
   background-color: #5e0094;
 }

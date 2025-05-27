@@ -13,6 +13,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   padding-top: 80px; /* offset for fixed navbar */
+  /* overflow:hidden ; */
 }
 
 /* Container for the sell form */

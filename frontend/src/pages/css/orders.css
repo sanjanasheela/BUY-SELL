@@ -7,17 +7,19 @@
 }
 
 html,
+
 body {
   width: 100%;
   min-height: 100%;
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
-  padding-top: 100px; /* for fixed navbar */
+  padding-top: 4px; /* Reduced from 10px to 4px, or set to 0 if no fixed navbar */
 }
+
 
 /* Container for entire orders section */
 .orders-container {
-  padding: 60px;
+  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
