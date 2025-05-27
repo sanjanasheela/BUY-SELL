@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../navbar";
-
+import './css/search.css'
 function SearchItems() {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,72 +61,73 @@ function SearchItems() {
   };
 
   return (
-    <div>
+    <>
       <Navbar />
-      <h2>All Items</h2>
-
-      <div style={{ display: "flex", gap: "20px" }}>
-        {/* Left side: Search bar and items */}
-        <div style={{ flex: 3 }}>
-          <div style={{ marginBottom: "20px" }}>
+      <div className="page-content">
+        <h2>All Items</h2>
+  
+        <div className="main-section">
+          {/* Left side: Search and items */}
+          <div style={{ flex: 3 }}>
             <input
+              className="search-input"
               type="text"
               placeholder="Search items by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ padding: "8px", width: "300px" }}
             />
-          </div>
-
-          <div className="items-grid">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
-                <div
-                  key={item._id}
-                  className="item-card"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    localStorage.setItem("selectedItem", JSON.stringify(item)); // Store item data
-                    navigate(`/item/${item._id}`); // Navigate to details page
-                  }}
-                >
-                  <h4>{item.itemname}</h4>
-                  <p>Price: ₹{item.price}</p>
-                  <p>Description: {item.description}</p>
-                  <p>
-                    Category:{" "}
-                    {Array.isArray(item.category)
-                      ? item.category.join(", ")
-                      : item.category}
-                  </p>
-                  <p>Seller ID: {item.sellerid}</p>
-                </div>
-              ))
-            ) : (
-              <p>No items found.</p>
-            )}
-          </div>
-        </div>
-
-        {/* Right side: Category filters */}
-        <div>
-          <h3>Filter by Category</h3>
-          {allCategories.map((category) => (
-            <div key={category} style={{ marginBottom: "8px" }}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                />
-                {" " + category}
-              </label>
+  
+            <div className="items-grid">
+              {filteredItems.length > 0 ? (
+                filteredItems.map((item) => (
+                  <div
+                    key={item._id}
+                    className="item-card"
+                    onClick={() => {
+                      localStorage.setItem("selectedItem", JSON.stringify(item));
+                      navigate(`/item/${item._id}`);
+                    }}
+                  >
+                    <h4>{item.itemname}</h4>
+                    <p>Price: ₹{item.price}</p>
+                    <p>Description: {item.description}</p>
+                    <p>
+                      Category:{" "}
+                      {Array.isArray(item.category)
+                        ? item.category.join(", ")
+                        : item.category}
+                    </p>
+                    <p>Seller ID: {item.sellerid}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No items found.</p>
+              )}
             </div>
-          ))}
+          </div>
+  
+          {/* Right side: Filter section */}
+          <div>
+            <h3>Filter by Category</h3>
+            {allCategories.map((category) => (
+              <div key={category} style={{ marginBottom: "8px" }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                  />
+                  {" " + category}
+                </label>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
+  
+  
 }
 
 export default SearchItems;

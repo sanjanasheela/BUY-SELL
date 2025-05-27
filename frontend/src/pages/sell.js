@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../navbar';
 import { handleError, handleSuccess } from '../utils';
-
+import './css/sell.css'
 function Sell() {
   const [formData, setFormData] = useState({
     itemname: '',
@@ -78,52 +78,56 @@ function Sell() {
   };
 
   return (
-    <div>
+    <>
       <Navbar />
-      <h1>Welcome to Sell Page</h1>
-      <form onSubmit={handleSubmit}>
-      <div>
-          <label>Item name:</label>
-          <input
-            type="text"
-            name="itemname"
-            value={formData.itemname}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>Price:</label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>Description:</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>Category:</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit">Sell Item</button>
-      </form>
-    </div>
+      <div className="sell-container">
+        <h1>Welcome to Sell Page</h1>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Item name:</label>
+            <input
+              type="text"
+              name="itemname"
+              value={formData.itemname}
+              onChange={handleChange}
+            />
+          </div>
+  
+          <div>
+            <label>Price:</label>
+            <input
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+            />
+          </div>
+  
+          <div>
+            <label>Description:</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </div>
+  
+          <div>
+            <label>Category:</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+            />
+          </div>
+  
+          <button type="submit">Sell Item</button>
+        </form>
+      </div>
+    </>
   );
+  
 }
 
 export default Sell;

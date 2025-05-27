@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../navbar";
-
+import './css/items.css'
 function ItemDetails() {
   const [item, setItem] = useState(null);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -75,37 +75,26 @@ function ItemDetails() {
   }
 
   return (
-    <div>
+    <>
       <Navbar />
-      <h2>{item.itemname}</h2>
-      <p>
-        <strong>Price:</strong> ₹{item.price}
-      </p>
-      <p>
-        <strong>Description:</strong> {item.description}
-      </p>
-      <p>
-        <strong>Category:</strong>{" "}
-        {Array.isArray(item.category)
-          ? item.category.join(", ")
-          : item.category}
-      </p>
-      <p>
-        <strong>Seller ID:</strong> {item.sellerid}
-      </p>
-
-      <button
-        onClick={handleAddToCart}
-        style={{ marginTop: "20px", padding: "10px 20px", cursor: "pointer" }}
-      >
-        Add to Cart
-      </button>
-
-      {addedToCart && (
-        <p style={{ color: "green", marginTop: "10px" }}>Added to cart!</p>
-      )}
-    </div>
+      <div className="item-details-container">
+        <h2>{item.itemname}</h2>
+        <p><strong>Price:</strong> ₹{item.price}</p>
+        <p><strong>Description:</strong> {item.description}</p>
+        <p><strong>Category:</strong> {Array.isArray(item.category) ? item.category.join(", ") : item.category}</p>
+        <p><strong>Seller ID:</strong> {item.sellerid}</p>
+  
+        <button onClick={handleAddToCart}>
+          Add to Cart
+        </button>
+  
+        {addedToCart && (
+          <p className="added-message">Added to cart!</p>
+        )}
+      </div>
+    </>
   );
+  
 }
 
 export default ItemDetails;

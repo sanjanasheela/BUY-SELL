@@ -40,6 +40,7 @@ router.post('/', async (req, res) => {
     if (!isValid) {
       return res.status(400).json({ errors });
     }
+    console.log('validated cart');
 
     // Change from const to let here
     let cart = await Cart.findOne({ userId, sellerId });
@@ -57,8 +58,10 @@ router.post('/', async (req, res) => {
         }],
         createdAt: Date.now(),
       });
-    } else {
-      // Update existing cart
+    }
+    // console.log('addeddd');
+     else {
+     
       const existingItemIndex = cart.items.findIndex(
         (item) => item.itemId.toString() === itemId.toString()
       );

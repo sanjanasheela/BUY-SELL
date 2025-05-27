@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../navbar";
-
+import './css/orders.css'
 function BuyerOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,44 +92,65 @@ function BuyerOrders() {
   return (
     <div>
       <Navbar />
-      <h2>Your Orders</h2>
-      {orders.map((order) => (
-  <div key={order._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-    
-    <p><strong>Order Type:</strong> {order.orderType}</p>
-    <p><strong>Transaction ID:</strong> {order.transactionId}</p>
-    <p><strong>Seller ID:</strong> {order.sellerId}</p>
-    <p><strong>Status:</strong> {order.status}</p>
-    
-    {/* Show OTP only if buyer order and status not complete */}
-    {order.orderType === "Buy" && order.status !== "completed" && order.otpHash && (
-      <p><strong>OTP:</strong> {order.otpHash}</p>
-    )}
+     
 
-    {/* For Sell orders or completed Buy orders, no OTP shown */}
+ <div className="orders-container">
+  <h2>Your Orders</h2>
 
-    <p><strong>Total Amount:</strong> ₹{order.totalAmount}</p>
-    <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+  <div className="orders-grid">
+    {orders.map((order) => (
+      <div
+        key={order._id}
+        className={`order-card ${
+          order.orderType === "Buy" ? "order-type-buy" : "order-type-sell"
+        }`}
+      >
+        <p><strong>Order Type:</strong> {order.orderType}</p>
 
-    <h4>Items:</h4>
-    {order.items.map((item, idx) => (
-  <div key={idx} style={{ paddingLeft: '15px', marginBottom: '10px' }}>
-    {(order.orderType === "Sell" && order.status === "completed" || order.orderType === "Buy") && order.otpHash && (
-      <>
-        <p><strong>Item Name:</strong> {item.name || "N/A"}</p>
-        <p><strong>Price per Item:</strong> ₹{item.price || "N/A"}</p>
-        <p><strong>Quantity:</strong> {item.quantity || 1}</p>
         <p>
-          <strong>Subtotal:</strong>{" "}
-          ₹{item.price && item.quantity ? item.price * item.quantity : "N/A"}
+          <strong>Status:</strong>{" "}
+          <span className={`status ${
+            order.status === "completed"
+              ? "status-completed"
+              : order.status === "pending"
+              ? "status-pending"
+              : "status-cancelled"
+          }`}>
+            {order.status}
+          </span>
         </p>
-      </>
-    )}
-  </div>
-))}
 
+        <p><strong>Transaction ID:</strong> {order.transactionId}</p>
+        <p><strong>Seller ID:</strong> {order.sellerId}</p>
+
+        {order.orderType === "Buy" && order.status !== "completed" && order.otpHash && (
+          <p><strong>OTP:</strong> {order.otpHash}</p>
+        )}
+
+        <p><strong>Total Amount:</strong> ₹{order.totalAmount}</p>
+        <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+
+        <h4>Items:</h4>
+        {order.items.map((item, idx) => (
+          <div className="item-details" key={idx}>
+            {(order.orderType === "Sell" && order.status === "completed" || order.orderType === "Buy") && order.otpHash && (
+              <>
+                <p><strong>Item Name:</strong> {item.name || "N/A"}</p>
+                <p><strong>Price per Item:</strong> ₹{item.price || "N/A"}</p>
+                <p><strong>Quantity:</strong> {item.quantity || 1}</p>
+                <p>
+                  <strong>Subtotal:</strong>{" "}
+                  ₹{item.price && item.quantity ? item.price * item.quantity : "N/A"}
+                </p>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    ))}
   </div>
-))}
+</div>
+
 
     </div>
   );

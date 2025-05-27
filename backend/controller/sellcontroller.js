@@ -16,7 +16,7 @@ const sellItem = async (req, res) => {
       category,
       sellerid
     });
-    console.log(newItem);
+    // console.log(newItem);
 
     await newItem.save();
     res.status(201).json({ message: 'Item listed successfully', item: newItem });

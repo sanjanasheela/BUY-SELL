@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../navbar";
-
+import './css/cart.css'
 function MyCart() {
   const [cartItems, setCartItems] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
@@ -215,38 +215,34 @@ function MyCart() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <>
       <Navbar />
-      <h2>My Cart</h2>
-
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <div>
-          {cartItems.map((item) => (
-            <div key={item._id || item.itemId || item.name}>
-              <p>
-                <strong>{item.name || "Unnamed Item"}</strong>
-              </p>
-              <p>
-                ₹{item.price ?? "N/A"} (x{item.quantity ?? 1})
-              </p>
-              <button onClick={() => handleRemove(item.itemId)}>Remove</button>
-              <button onClick={() => handleBuyNow(item)}>Buy Now</button> {/* NEW */}
-            </div>
-          ))}
-
-          <hr />
-
-          <p style={{ fontWeight: "bold", fontSize: "18px" }}>
-            Total: ₹{totalCost}
-          </p>
-
-          <button onClick={handleOrder}>Place Final Order</button>
-        </div>
-      )}
-    </div>
+      <div className="cart-container">
+        <h2>My Cart</h2>
+  
+        {cartItems.length === 0 ? (
+          <p>Your cart is empty.</p>
+        ) : (
+          <div>
+            {cartItems.map((item) => (
+              <div className="cart-item" key={item._id || item.itemId || item.name}>
+                <p><strong>{item.name || "Unnamed Item"}</strong></p>
+                <p>₹{item.price ?? "N/A"} ({item.quantity ?? 1})</p>
+                <button onClick={() => handleRemove(item.itemId)}>Remove</button>
+                <button onClick={() => handleBuyNow(item)}>Buy Now</button>
+              </div>
+            ))}
+  
+            <hr />
+  
+            <p className="cart-total">Total: ₹{totalCost}</p>
+            <button onClick={handleOrder}>Place Final Order</button>
+          </div>
+        )}
+      </div>
+    </>
   );
+  
 }
 
 export default MyCart;

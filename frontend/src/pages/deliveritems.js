@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../navbar';
-
+import './css/deliver.css'
 function DeliverItems() {
   const [ordersToDeliver, setOrdersToDeliver] = useState([]);
   const [otpInputs, setOtpInputs] = useState({});
@@ -31,13 +31,14 @@ function DeliverItems() {
   const handleDeliver = async (order) => {
     const { buyerId, sellerId, transactionId, totalAmount, _id } = order;
     const otp = otpInputs[_id];
-
+  
     if (!otp) {
       alert('Please enter the OTP');
       return;
     }
-
+  
     try {
+      // Step 1: Complete the transaction
       const response = await fetch('http://localhost:8080/deliver/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,84 +47,89 @@ function DeliverItems() {
           sellerId,
           transactionId,
           totalAmount,
-          otp
+          otp,
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         alert(data.message || 'Failed to complete transaction');
         return;
       }
-
+  
       alert(data.message); // success message
 
-      // Remove the delivered order from the list
-      setOrdersToDeliver(prevOrders => prevOrders.filter(o => o._id !== _id));
+      // console.log(order.items);
+      // for (const item of order.items) {
+      //   const deleteItemResponse = await fetch(`http://localhost:8080/sell/${item.itemId}`, {
+      //     method: 'DELETE',
+      //   });
       
+      //   if (!deleteItemResponse.ok) {
+      //     console.error(`Failed to delete item ${item._id}`);
+      //     alert(`Failed to delete item ${item.name} from the server`);
+      //     return; // optional: stop if one fails
+      //   }
+      // }
+      // Step 3: Update local state only after successful deletion on server
+      setOrdersToDeliver((prevOrders) => prevOrders.filter((o) => o._id !== _id));
+  
       // Clear the OTP input for this order
-      setOtpInputs(prev => {
+      setOtpInputs((prev) => {
         const newInputs = { ...prev };
         delete newInputs[_id];
         return newInputs;
       });
-
+  
     } catch (error) {
       console.error('Error completing transaction:', error);
       alert('Something went wrong. Please try again.');
     }
   };
-
-  if (!sellerId) return <p>User not logged in.</p>;
-   if(ordersToDeliver.length===0)
-   {
-   return (
-    <div>
-      <Navbar />
-      <p>Loading item details...</p>
-    </div>
-  );
-}
+  
   return (
-    <div>
+    <>
       <Navbar />
-      <h2>Deliver Items</h2>
-      {ordersToDeliver.length === 0 ? (
-        <p>No items to deliver.</p>
-      ) : (
-        ordersToDeliver.map(order => (
-          <div key={order._id} className="order-card" style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
-            <p><strong>Transaction ID:</strong> {order.transactionId}</p>
-            <p><strong>Buyer ID:</strong> {order.buyerId}</p>
-            <p><strong>Status:</strong> {order.status}</p>
-            <p><strong>Total Amount:</strong> ₹{order.totalAmount.toFixed(2)}</p>
-            <p><strong>OTP:</strong> {order.otpHash}</p>
-
-            <div>
-              <strong>Items:</strong>
-              <ul>
-                {order.items.map(item => (
-                  <li key={item._id}>
-                    {item.name} - ₹{item.price.toFixed(2)} x {item.quantity || 1}
-                  </li>
-                ))}
-              </ul>
+      <div className="deliver-container">
+        <h2>Deliver Items</h2>
+  
+        {ordersToDeliver.length === 0 ? (
+          <p>No items to deliver.</p>
+        ) : (
+          ordersToDeliver.map(order => (
+            <div key={order._id} className="order-card">
+              <p><strong>Transaction ID:</strong> {order.transactionId}</p>
+              <p><strong>Buyer ID:</strong> {order.buyerId}</p>
+              <p><strong>Status:</strong> {order.status}</p>
+              <p><strong>Total Amount:</strong> ₹{order.totalAmount.toFixed(2)}</p>
+              <p><strong>OTP:</strong> {order.otpHash}</p>
+  
+              <div>
+                <strong>Items:</strong>
+                <ul>
+                  {order.items.map(item => (
+                    <li key={item._id}>
+                      {item.name} - ₹{item.price.toFixed(2)} x {item.quantity || 1}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+  
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otpInputs[order._id] || ''}
+                onChange={(e) => handleOtpChange(order._id, e.target.value)}
+              />
+              <button onClick={() => handleDeliver(order)}>Mark as Delivered</button>
             </div>
-
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otpInputs[order._id] || ''}
-              onChange={(e) => handleOtpChange(order._id, e.target.value)}
-              style={{ marginRight: '8px' }}
-            />
-            <button onClick={() => handleDeliver(order)}>Mark as Delivered</button>
-          </div>
-        ))
-      )}
-    </div>
+          ))
+        )}
+      </div>
+    </>
   );
+  
 }
 
 export default DeliverItems;
