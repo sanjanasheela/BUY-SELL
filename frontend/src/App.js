@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-// import "./App.css";
 import { useState } from "react";
 import RefrshHandler from "./RefrshHandler";
 import Login from "./pages/Login";
@@ -10,8 +9,8 @@ import Items from './pages/items';
 import OrdersHistory from './pages/ordershistory';
 import DeliverItems from './pages/deliveritems';
 import MyCart from './pages/mycart';
-import Sell from './pages/sell'
-
+import Sell from './pages/sell';
+import Chatbot from './pages/chatbot'; 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -20,9 +19,19 @@ function App() {
     return token ? children : <Navigate to="/login" />;
   };
 
+  const token = localStorage.getItem("token");
+
   return (
-    <div className="App">
+    <div className="App" style={{ position: "relative", minHeight: "100vh" }}>
       <RefrshHandler setIsAuthenticated={setIsAuthenticated} />
+
+      {/*  in */}
+      {token && (
+        <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 999 }}>
+          <Chatbot />
+        </div>
+      )}
+
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />

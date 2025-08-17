@@ -6,7 +6,7 @@ function MyCart() {
   const [totalCost, setTotalCost] = useState(0);
 
   const user = JSON.parse(localStorage.getItem("userProfile"));
-  const baseUrl = "http://localhost:8080/cart";
+  const baseUrl = "http://localhost:8000/cart";
 
   useEffect(() => {
     if (user && user._id) {
@@ -117,7 +117,7 @@ function MyCart() {
       console.log("Sending order data:", JSON.stringify(orderData, null, 2));
 
       try {
-        const response = await fetch(`http://localhost:8080/orderhis`, {
+        const response = await fetch(`http://localhost:8000/orderhis`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -141,7 +141,7 @@ function MyCart() {
     // ...after all orders are placed
     try {
       const clearResponse = await fetch(
-        `http://localhost:8080/cart/${user._id}/clear`,
+        `http://localhost:8000/cart/${user._id}/clear`,
         {
           method: "DELETE",
         }
@@ -185,7 +185,7 @@ function MyCart() {
     console.log("Sending order data:", orderData); // ✅ Print to check
 
     try {
-      const response = await fetch(`http://localhost:8080/orderhis`, {
+      const response = await fetch(`http://localhost:8000/orderhis`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

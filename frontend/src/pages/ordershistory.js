@@ -18,7 +18,7 @@ function BuyerOrders() {
 
     const fetchOrders = async () => {
       try {
-        const baseUrl = "http://localhost:8080/orderhis";
+        const baseUrl = "http://localhost:8000/orderhis";
 
         // Fetch Buy Orders
         const buyRes = await fetch(`${baseUrl}/${userId}`);

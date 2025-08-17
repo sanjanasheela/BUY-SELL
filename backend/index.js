@@ -19,9 +19,10 @@ const sellRouter = require('./routes/sellRouter');
 const orderHisRouter = require('./routes/orderHisRouter');
 const cartRouter = require('./routes/cartRouter')
 const deliverRouter = require('./routes/deliverRouter');
+const chatbotRouters = require('./routes/chatbot');
 require('dotenv').config();
 require('./models/db');
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 
 app.get('/ping',(req,res)=>{
     res.send('PONG');
@@ -35,6 +36,7 @@ app.use('/sell',sellRouter);
 app.use('/orderhis',orderHisRouter);
 app.use('/cart',cartRouter);
 app.use('/deliver',deliverRouter);
+app.use('/chatbot',chatbotRouters);
 app.listen(PORT,()=>{
     console.log('server is running on', PORT);
 

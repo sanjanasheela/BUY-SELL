@@ -41,7 +41,7 @@ function ItemDetails() {
   
       console.log("POST body being sent:", postBody);
   
-      const response = await fetch("http://localhost:8080/cart", {
+      const response = await fetch("http://localhost:8000/cart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
